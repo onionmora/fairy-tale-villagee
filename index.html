@@ -7,6 +7,7 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
+
 <style>
 
    
@@ -24,9 +25,9 @@
     }
 
     #map {
-        height: 90vh;
-        width: 100%;
-    }
+    height: calc(100vh - 90px); /* Full screen minus header */
+    width: 100%;
+}
 
     .popup-content {
         text-align: center;
@@ -123,13 +124,20 @@
     color: #444;
     font-size: 14px;
 }
+
+.leaflet-marker-icon {
+    filter: drop-shadow(0 0 6px #ff0000);
+}
+
+
 </style>
 </head>
 <body>
+    
 
 <header>
     <h1>Fairy tale village</h1>
-    <p>click the places in my personal map</p>
+    <p>storyy of Mary Margaret </p>
 </header>
 
 <div id="map"></div>
@@ -144,44 +152,73 @@ var popupSound = new Audio('audios/freesound_community-pop-39222.mp3');
     var imageWidth = 2000;  // change to your image width
     var imageHeight = 2000;  // change to your image height
 
-    // Create map with simple coordinate system
-    var map = L.map('map', {
-        crs: L.CRS.Simple,
-        minZoom: -1
-    });
+   // Create map
+var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -1,
+    maxZoom: 4,
+    zoomSnap: 0.25,
+    zoomDelta: 0.5
+});
 
-    // Define image bounds
-    var bounds = [[0,0], [imageHeight, imageWidth]];
+// Define image bounds
+var bounds = [[0, 0], [imageHeight, imageWidth]];
 
+// Add image overlay
+var image = L.imageOverlay('images/Map_Zoom_4.webp', bounds).addTo(map);
+
+// Fit image perfectly to screen
+map.fitBounds(bounds);
+
+// Lock map inside image
+map.setMaxBounds(bounds);
+map.options.maxBoundsViscosity = 1.0;
+
+// 🌸 Mushroom Village Icon
+var mushroomIcon = L.icon({
+    iconUrl: 'images/mushroom-marker.png',
+    iconSize: [50, 50],
+    iconAnchor: [25, 50],
+    popupAnchor: [0, -45]
+});
     
-
-    // Add your image (replace with your image file name)
-    var image = L.imageOverlay('Map_Zoom_4.webp', bounds).addTo(map);
-
-    map.fitBounds(bounds);
-
-    // Add clickable markers (adjust coordinates manually)
-    L.marker([1200, 555]).addTo(map)
-    .bindPopup(`
-        <div class='popup-content'>
-            <h3>mushroom village</h3>
-            <img src="Map_Zoom_4.webp">
-            <p>where dwarfs and such lives</p>
-             <p>im gonna add some story or lore here pa</p>
-        </div>
-    `, {maxWidth: 400,   // 👈 increase this number
-        minWidth: 300    // 👈 optional (sets minimum size)
-
-       
+L.marker([1351, 933], { icon: mushroomIcon }).addTo(map)
+.bindPopup(`
+    <div class='popup-content'>
+        <h3>THE MUSHROOM VILLAGE</h3>
+        <img src="images/my-mushroom-village-v0-a5jmnun7bsve1.webp">
+        <p>im gonna add adiscription here pa</p>
+    </div>
+`, {
+    maxWidth: 400,
+    minWidth: 300
 });
 
 
+var DarkforestIcon = L.icon({
+    iconUrl: 'images/whitchhat.png',
+    iconSize: [50, 50],
+    iconAnchor: [25, 50],
+    popupAnchor: [0, -45]
+});
+    
+L.marker([815, 1767], { icon: DarkforestIcon }).addTo(map)
+.bindPopup(`
+    <div class='popup-content'>
+        <h3>THE DARK FOREST</h3>
+        <img src="images/my-mushroom-village-v0-a5jmnun7bsve1.webp">
+        <p>Where the witches live..and more</p>
+    </div>
+`, {
+    maxWidth: 400,
+    minWidth: 300
+});
 
     L.marker([600, 300]).addTo(map)
-        .bindPopup("<div class='popup-content'><darkest of dark ewan</h3><p>the dark forest</p></div>");
+        .bindPopup("<div class='popup-content'><h3>My Home</h3><p>Where I write poems ✍️</p></div>");
 
     L.marker([200, 700]).addTo(map)
-        .bindPopup("<div class='popup-content'><h3>Favorite Spot</h3><p>the i love you so much my bay HEHE</p></div>");
+        .bindPopup("<div class='popup-content'><h3>Favorite Spot</h3><p>My peaceful place 🌸</p></div>");
 
 
         
@@ -196,10 +233,13 @@ map.on('popupopen', function(e) {
     popupSound.play();
 });
 
+
+map.on('click', function(e) {
+    console.log(e.latlng);
+});
+
 </script>
 
 </body>
-
 </html>
-
 
